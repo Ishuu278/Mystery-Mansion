@@ -1,0 +1,55 @@
+.ghost-container {
+  position: fixed;
+  top: 10%;
+  right: 5%;
+  width: 80px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  filter: blur(1px);
+}
+
+.ghost-visible {
+  opacity: 1;
+  animation: ghostDrift 4s ease-in-out;
+}
+
+.ghost-body {
+  width: 60px;
+  height: 80px;
+  background: radial-gradient(ellipse, rgba(180, 180, 220, 0.15), transparent 70%);
+  border-radius: 50% 50% 30% 30%;
+  position: relative;
+}
+
+.ghost-eyes {
+  position: absolute;
+  top: 25px;
+  left: 10px;
+  display: flex;
+  gap: 12px;
+}
+
+.ghost-eye {
+  width: 8px;
+  height: 8px;
+  background: rgba(123, 94, 167, 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(123, 94, 167, 0.5);
+  animation: ghostBlink 3s ease-in-out infinite;
+}
+
+@keyframes ghostDrift {
+  0% { transform: translateX(40px) translateY(0); }
+  25% { transform: translateX(-20px) translateY(-15px); }
+  50% { transform: translateX(-60px) translateY(-5px); }
+  75% { transform: translateX(-30px) translateY(10px); }
+  100% { transform: translateX(40px) translateY(0); }
+}
+
+@keyframes ghostBlink {
+  0%, 45%, 55%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}

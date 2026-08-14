@@ -1,0 +1,104 @@
+.answer-card {
+  position: relative;
+  padding: 20px 24px;
+  min-height: 64px;
+  background: linear-gradient(135deg, rgba(18, 18, 35, 0.9), rgba(12, 12, 22, 0.95));
+  border: 1px solid rgba(123, 94, 167, 0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.answer-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(123, 94, 167, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.answer-card:not(:disabled):hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--accent-glow);
+  box-shadow: 0 0 30px rgba(123, 94, 167, 0.25),
+              0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.answer-card:not(:disabled):hover::before {
+  opacity: 1;
+}
+
+.answer-card:not(:disabled):active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.card-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-text {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Correct */
+.card-correct {
+  border-color: var(--accent-green) !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.05)) !important;
+  box-shadow: 0 0 30px rgba(74, 222, 128, 0.3),
+              0 0 60px rgba(74, 222, 128, 0.1);
+  animation: correctPulse 0.6s ease;
+}
+
+.card-correct .card-text {
+  color: var(--accent-green);
+}
+
+@keyframes correctPulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Wrong */
+.card-wrong {
+  border-color: var(--accent-red) !important;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.15), rgba(248, 113, 113, 0.05)) !important;
+  animation: wrongShake 0.5s ease;
+}
+
+.card-wrong .card-text {
+  color: var(--accent-red);
+}
+
+@keyframes wrongShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* Dimmed */
+.card-dimmed {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .answer-card {
+    padding: 18px 20px;
+    min-height: 56px;
+  }
+}
