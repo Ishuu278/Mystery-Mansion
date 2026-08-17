@@ -1,92 +1,81 @@
-/* ===== KID OVERLAY (centered question + options) ===== */
-.kid-overlay {
+/* ===== QUESTION BANNER (fixed at top) ===== */
+.room-question-banner {
   position: absolute;
-  inset: 0;
-  z-index: 20;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  width: 90%;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 20px;
-  pointer-events: none;
-}
-
-.kid-overlay > * {
+  gap: 10px;
   pointer-events: auto;
+  animation: roomBannerIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ===== QUESTION AREA ===== */
-.kid-question-area {
-  width: 100%;
-  max-width: 700px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  animation: kidSlideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+@keyframes roomBannerIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-24px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-@keyframes kidSlideDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.kid-read-btn {
+.room-read-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 20px;
+  padding: 7px 18px;
   background: rgba(80, 60, 20, 0.2);
   border: 2px solid rgba(200, 170, 80, 0.4);
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.25s ease;
-  animation: kidPulse 2.5s ease-in-out infinite;
+  animation: roomReadPulse 2.5s ease-in-out infinite;
 }
 
-.kid-read-btn:hover {
+.room-read-btn:hover {
   background: rgba(80, 60, 20, 0.35);
   border-color: rgba(200, 170, 80, 0.7);
   transform: scale(1.05);
 }
 
-.kid-read-btn:active {
+.room-read-btn:active {
   transform: scale(0.96);
 }
 
-@keyframes kidPulse {
+@keyframes roomReadPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(200, 170, 80, 0.2); }
-  50% { box-shadow: 0 0 16px 4px rgba(200, 170, 80, 0.15); }
+  50% { box-shadow: 0 0 14px 3px rgba(200, 170, 80, 0.12); }
 }
 
-.kid-read-icon {
-  font-size: 1.3rem;
+.room-read-icon {
+  font-size: 1.2rem;
 }
 
-.kid-read-label {
+.room-read-label {
   font-family: 'Segoe UI', 'Arial', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #d4b860;
   letter-spacing: 0.5px;
 }
 
-.kid-question-box {
+.room-question-box {
   background: rgba(10, 6, 18, 0.92);
   border: 2px solid rgba(160, 40, 40, 0.4);
-  border-radius: 18px;
-  padding: 20px 36px;
+  border-radius: 16px;
+  padding: 16px 30px;
   backdrop-filter: blur(14px);
   text-align: center;
   box-shadow: 0 8px 36px rgba(0, 0, 0, 0.5),
               0 0 40px rgba(160, 40, 40, 0.06),
               inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  width: 100%;
 }
 
-.kid-question-text {
+.room-question-text {
   font-family: 'Segoe UI', 'Arial', sans-serif;
-  font-size: clamp(1.2rem, 3.2vw, 1.7rem);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   font-weight: 700;
   color: #f0ebe0;
   line-height: 1.5;
@@ -96,190 +85,186 @@
                0 0 20px rgba(160, 40, 40, 0.15);
 }
 
-/* ===== OPTIONS ROW (3 side by side) ===== */
-.kid-options-row {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 700px;
-  width: 100%;
-}
-
-.kid-option {
-  flex: 1;
-  min-width: 140px;
-  max-width: 210px;
+/* ===== ANSWER OPTIONS (scattered in the room) ===== */
+.room-option {
+  position: absolute;
+  z-index: 18;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 22px 18px;
-  background: rgba(12, 8, 20, 0.9);
+  gap: 10px;
+  padding: 18px 22px;
+  min-width: 130px;
+  background: rgba(12, 8, 20, 0.82);
   border: 3px solid rgba(160, 40, 40, 0.35);
-  border-radius: 20px;
+  border-radius: 18px;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35),
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.4),
               inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
 }
 
-.kid-option::before {
-  content: "";
+.room-option-appeared {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Subtle glow behind each option */
+.room-option-glow {
   position: absolute;
-  inset: 0;
-  border-radius: 17px;
+  inset: -14px;
+  border-radius: 28px;
   background: radial-gradient(
-    ellipse at 50% 30%,
-    rgba(200, 150, 80, 0.06) 0%,
+    ellipse at 50% 50%,
+    rgba(200, 150, 80, 0.07) 0%,
     transparent 70%
   );
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  animation: roomGlowPulse 3s ease-in-out infinite;
 }
 
-.kid-option:hover:not(.kid-option-wrong):not(.kid-option-correct):not(.kid-option-dimmed)::before {
-  opacity: 1;
+@keyframes roomGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
-.kid-option:hover:not(.kid-option-wrong):not(.kid-option-correct):not(.kid-option-dimmed) {
-  transform: translateY(-8px) scale(1.04);
+.room-option:hover:not(.room-option-wrong):not(.room-option-correct):not(.room-option-dimmed) {
+  transform: translate(-50%, -50%) scale(1.08);
   border-color: rgba(200, 170, 80, 0.65);
-  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.45),
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
               0 0 24px rgba(200, 170, 80, 0.1);
-  background: rgba(18, 12, 28, 0.94);
+  background: rgba(18, 12, 28, 0.92);
 }
 
-.kid-option:active:not(.kid-option-wrong):not(.kid-option-correct) {
-  transform: translateY(-3px) scale(0.97);
-}
-
-/* Appeared animation */
-.kid-option-appeared {
+.room-option:hover:not(.room-option-wrong):not(.room-option-correct):not(.room-option-dimmed) .room-option-glow {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(200, 150, 80, 0.14) 0%,
+    transparent 70%
+  );
   opacity: 1;
-  transform: translateY(0);
 }
 
-.kid-option {
-  opacity: 0;
-  transform: translateY(20px);
+.room-option:active:not(.room-option-wrong):not(.room-option-correct) {
+  transform: translate(-50%, -50%) scale(1.02);
 }
 
-.kid-option-emoji {
-  font-size: 2.8rem;
+.room-option-emoji {
+  font-size: 2.6rem;
   line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
   transition: transform 0.3s ease;
 }
 
-.kid-option:hover:not(.kid-option-wrong):not(.kid-option-correct):not(.kid-option-dimmed) .kid-option-emoji {
+.room-option:hover:not(.room-option-wrong):not(.room-option-correct):not(.room-option-dimmed) .room-option-emoji {
   transform: scale(1.15);
 }
 
-.kid-option-text {
+.room-option-text {
   font-family: 'Segoe UI', 'Arial', sans-serif;
-  font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
   font-weight: 700;
   color: #e8e0d4;
   letter-spacing: 0.5px;
   text-align: center;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 }
 
 /* ===== CORRECT ===== */
-.kid-option-correct {
+.room-option-correct {
   border-color: rgba(58, 160, 58, 0.8) !important;
   background: rgba(20, 50, 20, 0.92) !important;
   box-shadow: 0 8px 36px rgba(58, 160, 58, 0.3) !important;
-  animation: kidCorrectBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: roomCorrectPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.kid-option-correct .kid-option-text {
+.room-option-correct .room-option-text {
   color: #a0e8a0;
 }
 
-.kid-option-correct .kid-option-emoji {
-  animation: kidCorrectSpin 0.6s ease;
+.room-option-correct .room-option-emoji {
+  animation: roomCorrectSpin 0.6s ease;
 }
 
-@keyframes kidCorrectBounce {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.12); }
-  60% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+@keyframes roomCorrectPop {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  30% { transform: translate(-50%, -50%) scale(1.15); }
+  60% { transform: translate(-50%, -50%) scale(0.95); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
-@keyframes kidCorrectSpin {
+@keyframes roomCorrectSpin {
   0% { transform: rotate(0deg) scale(1); }
   50% { transform: rotate(10deg) scale(1.2); }
   100% { transform: rotate(0deg) scale(1); }
 }
 
-.kid-option-badge {
+.room-option-badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 30px;
-  height: 30px;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(58, 160, 58, 0.9);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  animation: kidBadgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 3px 10px rgba(58, 160, 58, 0.4);
+  animation: roomBadgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 12px rgba(58, 160, 58, 0.4);
 }
 
-.kid-badge-wrong {
+.room-badge-wrong {
   background: rgba(180, 40, 40, 0.9);
-  box-shadow: 0 3px 10px rgba(180, 40, 40, 0.4);
+  box-shadow: 0 3px 12px rgba(180, 40, 40, 0.4);
 }
 
-@keyframes kidBadgePop {
+@keyframes roomBadgePop {
   from { opacity: 0; transform: scale(0); }
   to { opacity: 1; transform: scale(1); }
 }
 
 /* ===== WRONG ===== */
-.kid-option-wrong {
+.room-option-wrong {
   border-color: rgba(180, 40, 40, 0.7) !important;
   background: rgba(40, 10, 10, 0.9) !important;
-  animation: kidWrongShake 0.5s ease;
+  animation: roomWrongShake 0.5s ease;
 }
 
-.kid-option-wrong .kid-option-text {
+.room-option-wrong .room-option-text {
   color: #e08080;
 }
 
-@keyframes kidWrongShake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-10px) rotate(-2deg); }
-  30% { transform: translateX(10px) rotate(2deg); }
-  45% { transform: translateX(-7px) rotate(-1deg); }
-  60% { transform: translateX(7px) rotate(1deg); }
-  75% { transform: translateX(-4px); }
-  90% { transform: translateX(4px); }
+@keyframes roomWrongShake {
+  0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+  15% { transform: translate(-50%, -50%) translateX(-10px) rotate(-2deg); }
+  30% { transform: translate(-50%, -50%) translateX(10px) rotate(2deg); }
+  45% { transform: translate(-50%, -50%) translateX(-7px) rotate(-1deg); }
+  60% { transform: translate(-50%, -50%) translateX(7px) rotate(1deg); }
+  75% { transform: translate(-50%, -50%) translateX(-4px); }
+  90% { transform: translate(-50%, -50%) translateX(4px); }
 }
 
 /* ===== DIMMED ===== */
-.kid-option-dimmed {
+.room-option-dimmed {
   opacity: 0.3 !important;
   filter: grayscale(0.4);
   pointer-events: none;
-  transform: scale(0.95) !important;
+  transform: translate(-50%, -50%) scale(0.95) !important;
 }
 
 /* ===== SUCCESS OVERLAY ===== */
-.kid-success-overlay {
+.room-success-overlay {
   position: fixed;
   inset: 0;
   display: flex;
@@ -290,44 +275,44 @@
   pointer-events: none;
 }
 
-.kid-success-stars {
+.room-success-stars {
   display: flex;
   gap: 20px;
   margin-bottom: 12px;
 }
 
-.kid-star {
+.room-star {
   font-size: 2.5rem;
-  animation: kidStarPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: roomStarPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   opacity: 0;
 }
 
-.kid-star-1 { animation-delay: 0.1s; }
-.kid-star-2 { animation-delay: 0.3s; }
-.kid-star-3 { animation-delay: 0.5s; }
+.room-star-1 { animation-delay: 0.1s; }
+.room-star-2 { animation-delay: 0.3s; }
+.room-star-3 { animation-delay: 0.5s; }
 
-@keyframes kidStarPop {
+@keyframes roomStarPop {
   from { opacity: 0; transform: scale(0) rotate(-30deg); }
   to { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
-.kid-success-text {
+.room-success-text {
   font-family: 'Segoe UI', 'Arial', sans-serif;
   font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 800;
   color: #a0e8a0;
   text-shadow: 0 0 24px rgba(58, 160, 58, 0.4),
                0 4px 14px rgba(0, 0, 0, 0.5);
-  animation: kidSuccessPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: roomSuccessPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes kidSuccessPulse {
+@keyframes roomSuccessPulse {
   from { opacity: 0; transform: scale(0.5); }
   to { opacity: 1; transform: scale(1); }
 }
 
 /* ===== WRONG BANNER ===== */
-.kid-wrong-banner {
+.room-wrong-banner {
   position: fixed;
   bottom: 36px;
   left: 50%;
@@ -342,46 +327,42 @@
   color: #f0a0a0;
   letter-spacing: 0.5px;
   z-index: 50;
-  animation: kidBannerPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: roomBannerPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
   pointer-events: none;
 }
 
-@keyframes kidBannerPop {
+@keyframes roomBannerPop {
   from { opacity: 0; transform: translateX(-50%) translateY(16px) scale(0.8); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 600px) {
-  .kid-overlay {
-    gap: 16px;
-    padding: 14px;
+  .room-question-banner {
+    gap: 8px;
   }
-  .kid-question-box {
-    padding: 14px 20px;
+  .room-question-box {
+    padding: 12px 18px;
   }
-  .kid-options-row {
-    gap: 10px;
-  }
-  .kid-option {
+  .room-option {
     min-width: 100px;
-    padding: 14px 10px;
-    border-radius: 16px;
+    padding: 14px 14px;
+    border-radius: 14px;
   }
-  .kid-option-emoji {
-    font-size: 2.2rem;
+  .room-option-emoji {
+    font-size: 2rem;
   }
-  .kid-option-text {
+  .room-option-text {
     font-size: 0.8rem;
   }
-  .kid-read-btn {
-    padding: 6px 14px;
+  .room-read-btn {
+    padding: 5px 12px;
   }
-  .kid-read-label {
-    font-size: 0.75rem;
+  .room-read-label {
+    font-size: 0.7rem;
   }
-  .kid-wrong-banner {
+  .room-wrong-banner {
     font-size: 0.9rem;
     padding: 10px 20px;
     bottom: 20px;
@@ -389,18 +370,11 @@
 }
 
 @media (max-width: 400px) {
-  .kid-options-row {
-    flex-direction: column;
-    align-items: center;
+  .room-option {
+    min-width: 90px;
+    padding: 12px 10px;
   }
-  .kid-option {
-    max-width: 260px;
-    width: 100%;
-    flex-direction: row;
-    gap: 14px;
-    padding: 14px 20px;
-  }
-  .kid-option-emoji {
-    font-size: 2rem;
+  .room-option-emoji {
+    font-size: 1.8rem;
   }
 }

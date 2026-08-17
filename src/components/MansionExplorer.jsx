@@ -40,6 +40,11 @@ function MansionExplorer({
   const bgMidRef = useRef(null);
   const flashlightRef = useRef(null);
   const gunRef = useRef(null);
+  const bgAudioRef = useRef(null);
+  const heartbeatRef = useRef(null);
+  const chainsRef = useRef(null);
+  const musicBoxRef = useRef(null);
+  const screamRef = useRef(null);
 
   const mouseRaw = useRef({ x: 0.5, y: 0.5 });
   const mouseSmooth = useRef({ x: 0.5, y: 0.5 });
@@ -69,9 +74,14 @@ function MansionExplorer({
   const [walkingTransition, setWalkingTransition] = useState(false);
   const [showClues, setShowClues] = useState(false);
 
-  const currentRoomQuestion = questions.find(
-    (q) => q.room === currentRoom
-  );
+  const currentRoomQuestion = questions[currentQuestionIdx] || null;
+
+  // Sync currentRoom from question
+  useEffect(() => {
+    if (currentRoomQuestion && currentRoomQuestion.room !== currentRoom) {
+      setCurrentRoom(currentRoomQuestion.room);
+    }
+  }, [currentRoomQuestion?.id]);
 
   // Show question after room transition
   useEffect(() => {
@@ -136,7 +146,7 @@ function MansionExplorer({
     let active = false;
 
     const onTouchStart = (e) => {
-      if (transitioningRef.current || showCluesRef.current) return;
+      if (transitioningRef.current) return;
       const touch = e.touches[0];
       if (!touch) return;
       startX = touch.clientX;
@@ -145,7 +155,7 @@ function MansionExplorer({
     };
 
     const onTouchMove = (e) => {
-      if (!active || transitioningRef.current || showCluesRef.current) return;
+      if (!active || transitioningRef.current) return;
       const touch = e.touches[0];
       if (!touch) return;
       const dx = touch.clientX - startX;
@@ -159,14 +169,14 @@ function MansionExplorer({
     const onTouchEnd = () => { active = false; };
 
     const onMouseDown = (e) => {
-      if (transitioningRef.current || showCluesRef.current) return;
+      if (transitioningRef.current) return;
       startX = e.clientX;
       startY = e.clientY;
       active = true;
     };
 
     const onMouseUp = (e) => {
-      if (!active || transitioningRef.current || showCluesRef.current) return;
+      if (!active || transitioningRef.current) return;
       active = false;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
@@ -312,20 +322,44 @@ function MansionExplorer({
     return () => clearTimeout(t);
   }, [currentRoom]);
 
+  // Play/pause horror background audio
+  useEffect(() => {
+    const audios = [bgAudioRef, heartbeatRef, chainsRef, musicBoxRef];
+    audios.forEach((ref, i) => {
+      const audio = ref.current;
+      if (!audio) return;
+      audio.volume = [0.5, 0.35, 0.15, 0.12][i];
+      audio.play().catch(() => {});
+    });
+  }, []);
+
+  useEffect(() => {
+    const audios = [bgAudioRef, heartbeatRef, chainsRef, musicBoxRef];
+    audios.forEach((ref) => {
+      const audio = ref.current;
+      if (!audio) return;
+      if (soundEnabled) {
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
+    });
+  }, [soundEnabled]);
+
   useEffect(() => {
     const handleWheel = (e) => {
-      if (showClues) return;
+      if (transitioning) return;
       e.preventDefault();
       zoomTarget.current = Math.max(0.85, Math.min(1.3, zoomTarget.current + e.deltaY * -0.001));
     };
     const el = containerRef.current;
     if (el) el.addEventListener("wheel", handleWheel, { passive: false });
     return () => { if (el) el.removeEventListener("wheel", handleWheel); };
-  }, [showClues]);
+  }, [transitioning]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (showClues) return;
+      if (transitioning) return;
       switch (e.key.toLowerCase()) {
         case "a": case "arrowleft": moveKeys.current.left = true; break;
         case "d": case "arrowright": moveKeys.current.right = true; break;
@@ -347,7 +381,7 @@ function MansionExplorer({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [showClues]);
+  }, [transitioning]);
 
   const handleMobileMoveStart = useCallback((dir) => { setMobileDir(dir); }, []);
   const handleMobileMoveEnd = useCallback(() => { setMobileDir(null); }, []);
@@ -366,7 +400,14 @@ function MansionExplorer({
 
       {/* Background layers */}
       <div className="me-bg-layer me-bg-far" ref={bgFarRef}>
-        <img src={ROOMS[currentRoom].bg} alt="" draggable={false} className="me-room-img" />
+        <video
+          src="/assets/bg.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="me-room-video"
+        />
       </div>
 
       <div className="me-bg-layer me-bg-mid" ref={bgMidRef}>
@@ -530,6 +571,13 @@ function MansionExplorer({
 
       {/* Gun / Flashlight at bottom */}
       <GunFlashlight ref={gunRef} />
+
+      {/* Horror background audio layers */}
+      <audio ref={bgAudioRef} src="/assets/horror-ambient.wav" loop preload="auto" />
+      <audio ref={heartbeatRef} src="/assets/heartbeat.wav" loop preload="auto" />
+      <audio ref={chainsRef} src="/assets/chains.wav" loop preload="auto" />
+      <audio ref={musicBoxRef} src="/assets/creepy-music-box.wav" loop preload="auto" />
+      <audio ref={screamRef} src="/assets/scream.wav" preload="auto" />
 
       {/* Transition overlay */}
       {transitioning && <div className="me-transition-overlay" />}

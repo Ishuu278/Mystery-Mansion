@@ -27,6 +27,14 @@
   filter: brightness(0.6) saturate(0.4) sepia(0.25) hue-rotate(-10deg);
 }
 
+.me-room-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.6) saturate(0.4) sepia(0.25) hue-rotate(-10deg);
+}
+
 .me-bg-mid {
   inset: -30px;
 }
@@ -602,11 +610,12 @@
 }
 
 .me-scroll-hint span {
-  font-family: var(--font-old);
-  font-size: 0.65rem;
-  letter-spacing: 3px;
-  color: rgba(140, 100, 70, 0.4);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: rgba(180, 140, 100, 0.55);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes scrollHintFade {

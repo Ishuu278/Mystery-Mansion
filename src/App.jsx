@@ -14,6 +14,8 @@ import {
   playDoorCreak,
   playJumpScare,
   playFootsteps,
+  playScream,
+  playHeartbeatBurst,
 } from "./utils/horrorSounds";
 import "./styles/index.css";
 
@@ -56,6 +58,8 @@ function App() {
         setWrongCount((w) => w + 1);
         playWrong();
         playJumpScare();
+        playScream();
+        playHeartbeatBurst();
         setGlitchTrigger((g) => g + 1);
         // Reset so child can try another option
         setTimeout(() => {

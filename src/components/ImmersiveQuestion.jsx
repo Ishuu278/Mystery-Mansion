@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { playUIClick, playCorrect, playWrong } from "../utils/horrorSounds";
+import { playUIClick, playCorrect, playWrong, playScream } from "../utils/horrorSounds";
 import "../styles/ImmersiveQuestion.css";
 
 function speakText(text) {
@@ -12,21 +12,29 @@ function speakText(text) {
   window.speechSynthesis.speak(u);
 }
 
-function OptionCard({ option, index, revealed, isWrongThis, isCorrectThis, isDimmed, onSelect, locked }) {
+// Fixed positions for 3 options scattered around the room
+const OPTION_POSITIONS = [
+  { left: "12%", top: "42%" },
+  { left: "46%", top: "52%" },
+  { left: "80%", top: "40%" },
+];
+
+function OptionCard({ option, index, isWrongThis, isCorrectThis, isDimmed, onSelect, locked }) {
   const [appeared, setAppeared] = useState(false);
+  const pos = OPTION_POSITIONS[index] || OPTION_POSITIONS[0];
 
   useEffect(() => {
     setAppeared(false);
-    const t = setTimeout(() => setAppeared(true), 200 + index * 150);
+    const t = setTimeout(() => setAppeared(true), 300 + index * 200);
     return () => clearTimeout(t);
   }, [index, option.text]);
 
   const cardClass = [
-    "kid-option",
-    appeared && "kid-option-appeared",
-    isWrongThis && "kid-option-wrong",
-    isCorrectThis && "kid-option-correct",
-    isDimmed && "kid-option-dimmed",
+    "room-option",
+    appeared && "room-option-appeared",
+    isWrongThis && "room-option-wrong",
+    isCorrectThis && "room-option-correct",
+    isDimmed && "room-option-dimmed",
   ]
     .filter(Boolean)
     .join(" ");
@@ -34,6 +42,7 @@ function OptionCard({ option, index, revealed, isWrongThis, isCorrectThis, isDim
   return (
     <button
       className={cardClass}
+      style={{ left: pos.left, top: pos.top }}
       onClick={() => {
         if (locked) return;
         playUIClick();
@@ -42,10 +51,11 @@ function OptionCard({ option, index, revealed, isWrongThis, isCorrectThis, isDim
       disabled={locked && !isWrongThis}
       aria-label={option.text}
     >
-      <span className="kid-option-emoji">{option.emoji}</span>
-      <span className="kid-option-text">{option.text}</span>
-      {isCorrectThis && <span className="kid-option-badge">&#x2714;</span>}
-      {isWrongThis && <span className="kid-option-badge kid-badge-wrong">&#x2718;</span>}
+      <span className="room-option-glow" />
+      <span className="room-option-emoji">{option.emoji}</span>
+      <span className="room-option-text">{option.text}</span>
+      {isCorrectThis && <span className="room-option-badge">&#x2714;</span>}
+      {isWrongThis && <span className="room-option-badge room-badge-wrong">&#x2718;</span>}
     </button>
   );
 }
@@ -63,7 +73,6 @@ export default function ImmersiveQuestion({ question, answered, lastResult, onAn
     autoReadRef.current = false;
   }, [question.id]);
 
-  // Auto-read the question aloud on first show
   useEffect(() => {
     if (!autoReadRef.current && question) {
       autoReadRef.current = true;
@@ -88,6 +97,7 @@ export default function ImmersiveQuestion({ question, answered, lastResult, onAn
         }, 1500);
       } else {
         playWrong();
+        playScream();
         setLocked(false);
         onRetry();
       }
@@ -95,59 +105,57 @@ export default function ImmersiveQuestion({ question, answered, lastResult, onAn
     [locked, question, onAnswer, onRetry]
   );
 
-  const handleReadAloud = () => {
+  const handleReadAloud = (e) => {
+    e.stopPropagation();
     playUIClick();
     speakText(question.question);
   };
 
   return (
-    <div className="kid-overlay">
-      {/* Question banner */}
-      <div className="kid-question-area">
-        <button className="kid-read-btn" onClick={handleReadAloud} title="Read the question aloud">
-          <span className="kid-read-icon">&#x1F50A;</span>
-          <span className="kid-read-label">Read Aloud</span>
+    <>
+      {/* Question banner — fixed at top, pointer-events on so player can read/click Read Aloud */}
+      <div className="room-question-banner">
+        <button className="room-read-btn" onClick={handleReadAloud} title="Read the question aloud">
+          <span className="room-read-icon">&#x1F50A;</span>
+          <span className="room-read-label">Read Aloud</span>
         </button>
-        <div className="kid-question-box">
-          <p className="kid-question-text">{question.question}</p>
+        <div className="room-question-box">
+          <p className="room-question-text">{question.question}</p>
         </div>
       </div>
 
-      {/* 3 options side by side */}
-      <div className="kid-options-row">
-        {question.options.map((option, idx) => (
-          <OptionCard
-            key={`${question.id}-${idx}`}
-            option={option}
-            index={idx}
-            revealed={!answered}
-            isWrongThis={selectedIdx === idx && lastResult === "wrong"}
-            isCorrectThis={showSuccess && selectedIdx === idx}
-            isDimmed={showSuccess && selectedIdx !== idx}
-            onSelect={handleSelect}
-            locked={locked}
-          />
-        ))}
-      </div>
+      {/* Answer options — scattered inside the room at different positions */}
+      {question.options.map((option, idx) => (
+        <OptionCard
+          key={`${question.id}-${idx}`}
+          option={option}
+          index={idx}
+          isWrongThis={selectedIdx === idx && lastResult === "wrong"}
+          isCorrectThis={showSuccess && selectedIdx === idx}
+          isDimmed={showSuccess && selectedIdx !== idx}
+          onSelect={handleSelect}
+          locked={locked}
+        />
+      ))}
 
       {/* Success celebration */}
       {showSuccess && (
-        <div className="kid-success-overlay">
-          <div className="kid-success-stars">
-            <span className="kid-star kid-star-1">&#x2B50;</span>
-            <span className="kid-star kid-star-2">&#x2B50;</span>
-            <span className="kid-star kid-star-3">&#x2B50;</span>
+        <div className="room-success-overlay">
+          <div className="room-success-stars">
+            <span className="room-star room-star-1">&#x2B50;</span>
+            <span className="room-star room-star-2">&#x2B50;</span>
+            <span className="room-star room-star-3">&#x2B50;</span>
           </div>
-          <div className="kid-success-text">Great Job!</div>
+          <div className="room-success-text">Great Job!</div>
         </div>
       )}
 
       {/* Wrong feedback */}
       {answered && lastResult === "wrong" && !showSuccess && (
-        <div className="kid-wrong-banner">
+        <div className="room-wrong-banner">
           <span>Try again!</span>
         </div>
       )}
-    </div>
+    </>
   );
 }
