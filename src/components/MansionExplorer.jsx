@@ -40,6 +40,7 @@ function MansionExplorer({
   const bgMidRef = useRef(null);
   const flashlightRef = useRef(null);
   const gunRef = useRef(null);
+  const videoRef = useRef(null);
   const bgAudioRef = useRef(null);
   const heartbeatRef = useRef(null);
   const chainsRef = useRef(null);
@@ -333,6 +334,13 @@ function MansionExplorer({
     });
   }, []);
 
+  // Ensure background video plays
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {});
+  }, []);
+
   useEffect(() => {
     const audios = [bgAudioRef, heartbeatRef, chainsRef, musicBoxRef];
     audios.forEach((ref) => {
@@ -401,6 +409,7 @@ function MansionExplorer({
       {/* Background layers */}
       <div className="me-bg-layer me-bg-far" ref={bgFarRef}>
         <video
+          ref={videoRef}
           src="/assets/bg.mp4"
           autoPlay
           loop
