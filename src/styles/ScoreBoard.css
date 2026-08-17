@@ -3,8 +3,8 @@
   flex-direction: column;
   align-items: center;
   padding: 8px 20px;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glow);
+  background: rgba(10, 8, 15, 0.75);
+  border: 1px solid rgba(100, 30, 30, 0.25);
   border-radius: 10px;
   min-width: 90px;
   transition: all 0.3s ease;
@@ -23,7 +23,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--accent-gold);
-  text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+  text-shadow: 0 0 12px rgba(100, 80, 30, 0.3);
   transition: transform 0.3s ease;
 }
 

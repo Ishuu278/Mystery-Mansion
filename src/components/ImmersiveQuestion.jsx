@@ -1,89 +1,153 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { playUIClick, playCorrect, playWrong } from "../utils/horrorSounds";
 import "../styles/ImmersiveQuestion.css";
 
-function ImmersiveQuestion({ question, answered, lastResult, onAnswer, onRetry }) {
-  const [visible, setVisible] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showHint, setShowHint] = useState(false);
+function speakText(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.85;
+  u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+}
+
+function OptionCard({ option, index, revealed, isWrongThis, isCorrectThis, isDimmed, onSelect, locked }) {
+  const [appeared, setAppeared] = useState(false);
 
   useEffect(() => {
-    setVisible(false);
-    setSelectedOption(null);
-    setShowHint(false);
-    const t = setTimeout(() => setVisible(true), 100);
+    setAppeared(false);
+    const t = setTimeout(() => setAppeared(true), 200 + index * 150);
     return () => clearTimeout(t);
-  }, [question]);
+  }, [index, option.text]);
 
-  const handleSelect = (option) => {
-    if (answered) return;
-    setSelectedOption(option);
-    onAnswer(option);
-  };
+  const cardClass = [
+    "kid-option",
+    appeared && "kid-option-appeared",
+    isWrongThis && "kid-option-wrong",
+    isCorrectThis && "kid-option-correct",
+    isDimmed && "kid-option-dimmed",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className={`immersive-question ${visible ? "iq-visible" : ""} ${answered && lastResult === "correct" ? "iq-correct" : ""} ${answered && lastResult === "wrong" ? "iq-wrong" : ""}`}>
-      <div className="iq-glow" />
-
-      <div className="iq-inner">
-        <div className="iq-header">
-          <span className="iq-icon">&#128270;</span>
-          <span className="iq-label">CLUE FOUND</span>
-        </div>
-
-        <p className="iq-text">{question.question}</p>
-
-        <div className="iq-options">
-          {question.options.map((option, idx) => (
-            <button
-              key={option}
-              className={`iq-option ${
-                answered && option === question.correct ? "iq-opt-correct" : ""
-              } ${answered && selectedOption === option && option !== question.correct ? "iq-opt-wrong" : ""} ${answered && option !== question.correct && option !== selectedOption ? "iq-opt-dimmed" : ""}`}
-              onClick={() => handleSelect(option)}
-              disabled={answered}
-              style={{ animationDelay: `${idx * 0.08}s` }}
-            >
-              <span className="iq-opt-letter">
-                {String.fromCharCode(65 + idx)}
-              </span>
-              <span className="iq-opt-text">{option}</span>
-            </button>
-          ))}
-        </div>
-
-        {answered && lastResult === "wrong" && (
-          <div className="iq-feedback iq-feedback-wrong">
-            <span>&#129417; Hoo-hoo! Try Again!</span>
-            <button className="iq-retry" onClick={onRetry}>
-              TRY AGAIN
-            </button>
-          </div>
-        )}
-
-        {answered && lastResult === "correct" && (
-          <div className="iq-feedback iq-feedback-correct">
-            <span>&#10024; CORRECT! +100</span>
-          </div>
-        )}
-
-        {!answered && question.hint && (
-          <div className="iq-hint-area">
-            {!showHint ? (
-              <button className="iq-hint-btn" onClick={() => setShowHint(true)}>
-                <span className="iq-hint-icon">&#128161;</span>
-                <span>Need a Hint?</span>
-              </button>
-            ) : (
-              <div className="iq-hint-revealed">
-                <span className="iq-hint-icon">&#128161;</span>
-                <span className="iq-hint-text">{question.hint}</span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+    <button
+      className={cardClass}
+      onClick={() => {
+        if (locked) return;
+        playUIClick();
+        onSelect(option);
+      }}
+      disabled={locked && !isWrongThis}
+      aria-label={option.text}
+    >
+      <span className="kid-option-emoji">{option.emoji}</span>
+      <span className="kid-option-text">{option.text}</span>
+      {isCorrectThis && <span className="kid-option-badge">&#x2714;</span>}
+      {isWrongThis && <span className="kid-option-badge kid-badge-wrong">&#x2718;</span>}
+    </button>
   );
 }
 
-export default ImmersiveQuestion;
+export default function ImmersiveQuestion({ question, answered, lastResult, onAnswer, onRetry }) {
+  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [locked, setLocked] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const autoReadRef = useRef(false);
+
+  useEffect(() => {
+    setSelectedIdx(null);
+    setLocked(false);
+    setShowSuccess(false);
+    autoReadRef.current = false;
+  }, [question.id]);
+
+  // Auto-read the question aloud on first show
+  useEffect(() => {
+    if (!autoReadRef.current && question) {
+      autoReadRef.current = true;
+      const t = setTimeout(() => speakText(question.question), 600);
+      return () => clearTimeout(t);
+    }
+  }, [question]);
+
+  const handleSelect = useCallback(
+    (option) => {
+      if (locked) return;
+      const idx = question.options.findIndex((o) => o.text === option.text);
+      setSelectedIdx(idx);
+
+      if (option.isCorrect) {
+        setLocked(true);
+        playCorrect();
+        setShowSuccess(true);
+        speakText("Correct! Well done!");
+        setTimeout(() => {
+          onAnswer(option);
+        }, 1500);
+      } else {
+        playWrong();
+        setLocked(false);
+        onRetry();
+      }
+    },
+    [locked, question, onAnswer, onRetry]
+  );
+
+  const handleReadAloud = () => {
+    playUIClick();
+    speakText(question.question);
+  };
+
+  return (
+    <div className="kid-overlay">
+      {/* Question banner */}
+      <div className="kid-question-area">
+        <button className="kid-read-btn" onClick={handleReadAloud} title="Read the question aloud">
+          <span className="kid-read-icon">&#x1F50A;</span>
+          <span className="kid-read-label">Read Aloud</span>
+        </button>
+        <div className="kid-question-box">
+          <p className="kid-question-text">{question.question}</p>
+        </div>
+      </div>
+
+      {/* 3 options side by side */}
+      <div className="kid-options-row">
+        {question.options.map((option, idx) => (
+          <OptionCard
+            key={`${question.id}-${idx}`}
+            option={option}
+            index={idx}
+            revealed={!answered}
+            isWrongThis={selectedIdx === idx && lastResult === "wrong"}
+            isCorrectThis={showSuccess && selectedIdx === idx}
+            isDimmed={showSuccess && selectedIdx !== idx}
+            onSelect={handleSelect}
+            locked={locked}
+          />
+        ))}
+      </div>
+
+      {/* Success celebration */}
+      {showSuccess && (
+        <div className="kid-success-overlay">
+          <div className="kid-success-stars">
+            <span className="kid-star kid-star-1">&#x2B50;</span>
+            <span className="kid-star kid-star-2">&#x2B50;</span>
+            <span className="kid-star kid-star-3">&#x2B50;</span>
+          </div>
+          <div className="kid-success-text">Great Job!</div>
+        </div>
+      )}
+
+      {/* Wrong feedback */}
+      {answered && lastResult === "wrong" && !showSuccess && (
+        <div className="kid-wrong-banner">
+          <span>Try again!</span>
+        </div>
+      )}
+    </div>
+  );
+}

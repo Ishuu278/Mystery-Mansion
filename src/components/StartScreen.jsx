@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { playUIClick } from "../utils/horrorSounds";
 import "../styles/StartScreen.css";
 
 function StartScreen({ onStart }) {
   const [exiting, setExiting] = useState(false);
 
   const handleEnter = () => {
+    playUIClick();
     setExiting(true);
     setTimeout(onStart, 800);
   };

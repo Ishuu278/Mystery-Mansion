@@ -1,23 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Cinzel:wght@400;600;700;900&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121c;
-  --bg-card: rgba(18, 18, 30, 0.85);
-  --bg-glass: rgba(20, 20, 35, 0.75);
-  --text-primary: #e8e8f0;
-  --text-secondary: #a0a0b8;
-  --accent-glow: #7b5ea7;
-  --accent-green: #4ade80;
-  --accent-red: #f87171;
-  --accent-gold: #fbbf24;
-  --accent-cyan: #67e8f9;
-  --border-glow: rgba(123, 94, 167, 0.4);
-  --shadow-glow: 0 0 30px rgba(123, 94, 167, 0.15);
-  --font-display: 'Cinzel', serif;
-  --font-body: 'Inter', sans-serif;
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-card: rgba(10, 8, 15, 0.92);
+  --bg-glass: rgba(12, 10, 18, 0.8);
+  --text-primary: #c8c0b0;
+  --text-secondary: #8a8070;
+  --accent-glow: #8b2020;
+  --accent-green: #3a6b3a;
+  --accent-red: #a02020;
+  --accent-gold: #8a7030;
+  --accent-cyan: #4a6070;
+  --border-glow: rgba(100, 30, 30, 0.4);
+  --shadow-glow: 0 0 30px rgba(120, 20, 20, 0.15);
+  --font-display: 'Creepster', cursive;
+  --font-body: 'Special Elite', cursive;
+  --font-old: 'Cinzel', serif;
 }
 
 html, body, #root {
@@ -34,7 +35,7 @@ html, body, #root {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 30%, #1a1a2e 0%, #0a0a0f 70%);
+  background: radial-gradient(ellipse at 50% 30%, #0d0808 0%, #050505 70%);
 }
 
 /* --- PARTICLES --- */
@@ -49,7 +50,7 @@ html, body, #root {
   position: absolute;
   bottom: -10px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(200, 200, 220, 0.8), rgba(123, 94, 167, 0.3));
+  background: radial-gradient(circle, rgba(140, 120, 100, 0.5), rgba(80, 40, 40, 0.2));
   animation: floatUp linear infinite;
 }
 
@@ -88,7 +89,7 @@ html, body, #root {
 .ghost-body {
   width: 60px;
   height: 80px;
-  background: radial-gradient(ellipse, rgba(180, 180, 220, 0.15), transparent 70%);
+  background: radial-gradient(ellipse, rgba(140, 120, 100, 0.1), transparent 70%);
   border-radius: 50% 50% 30% 30%;
   position: relative;
 }
@@ -104,9 +105,9 @@ html, body, #root {
 .ghost-eye {
   width: 8px;
   height: 8px;
-  background: rgba(123, 94, 167, 0.6);
+  background: rgba(160, 40, 40, 0.6);
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(123, 94, 167, 0.5);
+  box-shadow: 0 0 10px rgba(160, 40, 40, 0.5);
   animation: ghostBlink 3s ease-in-out infinite;
 }
 

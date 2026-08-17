@@ -19,7 +19,7 @@
 .ghost-body {
   width: 60px;
   height: 80px;
-  background: radial-gradient(ellipse, rgba(180, 180, 220, 0.15), transparent 70%);
+  background: radial-gradient(ellipse, rgba(120, 100, 80, 0.1), transparent 70%);
   border-radius: 50% 50% 30% 30%;
   position: relative;
 }
@@ -35,9 +35,9 @@
 .ghost-eye {
   width: 8px;
   height: 8px;
-  background: rgba(123, 94, 167, 0.6);
+  background: rgba(160, 40, 40, 0.6);
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(123, 94, 167, 0.5);
+  box-shadow: 0 0 10px rgba(160, 40, 40, 0.5);
   animation: ghostBlink 3s ease-in-out infinite;
 }
 

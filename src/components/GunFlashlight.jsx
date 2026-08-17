@@ -5,8 +5,8 @@ const GunFlashlight = forwardRef(function GunFlashlight(props, ref) {
     <div className="gun-flashlight" ref={ref}>
       <svg
         viewBox="0 0 120 200"
-        width="120"
-        height="200"
+        width="160"
+        height="260"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
